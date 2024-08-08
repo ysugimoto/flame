@@ -1,0 +1,58 @@
+{
+    "name": "ysugimoto/flame",
+    "description": "Frontend Integration library for CodeIgniter4",
+    "type": "library",
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "codeigniter4/framework": ">=4.0.0",
+        "codeigniter/coding-standard": "1.7.*",
+        "codeigniter/phpstan-codeigniter": "^1.3",
+        "phpunit/phpunit": "^9.6",
+        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpstan/extension-installer": "^1.4",
+        "friendsofphp/php-cs-fixer": "^3.62"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Flame\\": "src/"
+        },
+        "exclude-from-classmap": [
+          "**/Databsae/Migrations/**"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests",
+            "Tests\\Support\\": "tests/_support"
+        }
+    },
+    "authors": [
+        {
+            "name": "ysugimoto",
+            "email": "sugimoto@wnotes.net"
+        }
+    ],
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpstan analyze",
+        "php-cs-fixer": [
+          "php-cs-fixer fix --ansi --verbose --diff ./src",
+          "php-cs-fixer fix --ansi --verbose --diff ./tests"
+        ],
+        "fmt": "@php-cs-fixer",
+        "build": [
+          "@test",
+          "@lint",
+          "@fmt"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    }
+}

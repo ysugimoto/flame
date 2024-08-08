@@ -1,0 +1,22 @@
+includes:
+	- phar://vendor/phpstan/phpstan/phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+	tmpDir: build/phpstan
+	level: 5
+	paths:
+		- src/
+		- tests/
+	bootstrapFiles:
+		- vendor/codeigniter4/framework/system/Test/bootstrap.php
+	codeigniter:
+		additionalConfigNamespaces:
+			- Flame\Config
+		additionalServices:
+			- Flame\Config\Services
+	strictRules:
+		allRules: false
+		disallowedLooseComparison: true
+		booleansInConditions: true
+		disallowedConstructs: true
+		matchingInheritedMethodNames: true
