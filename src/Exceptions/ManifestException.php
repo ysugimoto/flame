@@ -57,4 +57,40 @@ class ManifestException extends CriticalError
     {
         return new static("Flame.assetNotFound:$file");
     }
+
+    /**
+     * Raise exception when the manifest URL is malformed
+     *
+     * @access public
+     * @static
+     * @return ManifestException
+     */
+    public static function forInvalidManifestURL(string $file): ManifestException
+    {
+        return new static("Flame.invalidManifestURL:$file");
+    }
+
+    /**
+     * Raise exception when HTTP request fetch is failed
+     *
+     * @access public
+     * @static
+     * @return ManifestException
+     */
+    public static function forFailedHttpRequest(): ManifestException
+    {
+        return new static("Flame.failedHttpRequest");
+    }
+
+    /**
+     * Raise exception when HTTP response status code is not 200
+     *
+     * @access public
+     * @static
+     * @return ManifestException
+     */
+    public static function forHttpStautsCode(int $code): ManifestException
+    {
+        return new static("Flame.httpStautsCode:$code");
+    }
 }
