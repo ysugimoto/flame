@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@2
+        with:
+          php-version: "8.3"
+          tools: composer, php-cs-fixer, phpstan, phpunit
+      - name: install dependencies
+        run: composer install
+      - name: build
+        run: composer build
+
+
