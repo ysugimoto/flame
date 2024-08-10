@@ -16,11 +16,16 @@ class Setup extends BaseCommand
 
     public function run(array $params)
     {
-        $this->copyConfig("Config/Flame.php");
+        // Copy default configuration class to the App Configuration with some replacement namesapce, baseclass, extending.
+        $this->copyConfig("Config/Flame.php", [
+            "namespace Flame\\Config"              => "namespace Config",
+            "use CodeIgniter\\Config\\BaseConfig;" => "use Flame\\Config\\Flame as FlameConfig;",
+            "extends BaseConfig"                   => "extends FlameConfig",
+        ]);
         CLI::write(CLI::color("Finished!", "green"));
     }
 
-    protected function copyConfig(string $path)
+    protected function copyConfig(string $path, ?array $replaces)
     {
         $source = __DIR__ . "/../" . $path;
         $destination = APPPATH . $path;
@@ -31,7 +36,14 @@ class Setup extends BaseCommand
             return;
         }
 
-        $write = file_put_contents($destination, file_get_contents($source));
+        // Refers CodeIgniter Shield installation.
+        // @ref https://github.com/codeigniter4/shield/blob/develop/src/Commands/Setup.php
+        $buffer = file_get_contents($source);
+        if ($replaces !== null) {
+            $buffer = strtr($buffer, $replaces);
+        }
+
+        $write = file_put_contents($destination, $buffer);
         if ($write === false) {
             CLI::write(CLI::color("Failed to copy flame configuration file", "red"));
             return;

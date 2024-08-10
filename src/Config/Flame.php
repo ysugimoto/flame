@@ -24,7 +24,7 @@ class Flame extends BaseConfig
      * @access public
      * @property string $publicPath
      */
-    public string $publicPath = PUBLICPATH;
+    public string $publicPath = ROOTPATH . "public";
 
     /**
      * Configuration for the flame manifest file that created by flame-vite-plugin.
