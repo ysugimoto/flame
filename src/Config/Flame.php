@@ -18,7 +18,8 @@ class Flame extends BaseConfig
     /**
      * Configuration for the public directory path.
      * Typically the CodeIgniter's public path is defined as PUBLICPATH consant
-     * but you can change arbitrary path if you want.
+     * but you can change arbitrary path - for example, you don't want to place .flame file in public directory.
+     * But then you need to change the manifest generation configuration on flame-vite-plugin configuration.
      *
      * @access public
      * @property string $publicPath
@@ -26,12 +27,11 @@ class Flame extends BaseConfig
     public string $publicPath = PUBLICPATH;
 
     /**
-     * Configuration for the vite manifest JSON file.
-     * Typically manifest file will be generated into PUBLICPATH/.vite/manifest.json
-     * but you can change arbitrary path if you want.
+     * Configuration for the flame manifest file that created by flame-vite-plugin.
+     * Typically manifest file will be generated into PUBLICPATH/.flame
      *
      * @access public
      * @property string $manifestFile
      */
-    public string $manifestFile = ".vite/manifest.json";
+    public string $manifestFile = ".flame";
 }

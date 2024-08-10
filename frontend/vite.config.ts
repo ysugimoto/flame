@@ -1,17 +1,17 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import flame from "flame-vite-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    manifest: true,
-    outDir: "../public",
-    rollupOptions: {
-      input: [
-        "src/main.tsx",
-        "src/main.css",
-      ],
-    },
-  },
-  plugins: [react()],
-})
+  plugins: [
+    react(),
+    flame({
+      input: {
+        "src/main.tsx": "main",
+        "src/main.css": "css",
+      },
+      publicPath: "../public",
+    }),
+  ],
+});

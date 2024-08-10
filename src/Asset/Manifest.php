@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flame\Asset;
 
+use Flame\Config\Flame as FlameConfig;
 use Flame\Exceptions\ManifestException;
 
 /**
@@ -16,12 +17,20 @@ use Flame\Exceptions\ManifestException;
 class Manifest
 {
     /**
-     * Holds loaded manifest data.
+     * Holds loaded vite built manigest data.
      *
      * @access protected
      * @property array $manifest
      */
     protected array $manifest;
+
+    /**
+     * Holds alias configurations.
+     *
+     * @access protected
+     * @property array $aliases
+     */
+    protected array $aliases;
 
     /**
      * Constructor.
@@ -31,7 +40,8 @@ class Manifest
      */
     public function __construct(array $manifest)
     {
-        $this->manifest = $manifest;
+        $this->manifest = $manifest["manifest"] ?? [];
+        $this->aliases  = $manifest["aliases"] ?? [];
     }
 
     /**
@@ -44,10 +54,28 @@ class Manifest
      */
     public function chunk(string $file): Chunk
     {
-        if (! isset($this->manifest[$file])) {
+        // Resolve alias
+        $file = $this->lookupAlias($file);
+
+        if (!isset($this->manifest[$file])) {
             throw ManifestException::forAssetNotFound($file);
         }
 
         return new Chunk($this->manifest[$file]);
+    }
+
+    /**
+     * Look up actual file from alias name like "@main".
+     *
+     * @access protected
+     * @param string $file
+     * @return string
+     */
+    public function lookupAlias(string $file): string
+    {
+        if (strpos($file, "@") !== 0) {
+            return $file;
+        }
+        return $this->aliases[$file] ?? $file;
     }
 }

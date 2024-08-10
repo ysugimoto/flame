@@ -19,3 +19,7 @@ application/logs/*
 
 *.cache
 build
+
+#nodejs
+node_modules
+frontend

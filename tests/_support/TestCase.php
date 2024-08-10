@@ -13,14 +13,13 @@ use Flame\Config\Flame;
  */
 abstract class TestCase extends CIUnitTestCase
 {
+    protected $mock;
+
     protected function setUp(): void
     {
         $this->resetServices();
 
         parent::setUp();
-
-        // Load helpers that should be autoloaded
-        helper(['flame']);
     }
 
     protected function wrong()

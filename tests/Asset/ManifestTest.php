@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Asset;
 
+use Tests\Support\TestCase;
+use Tests\Fixture\Manifest as ManifestFixture;
 use Flame\Asset\Manifest;
 use Flame\Asset\Chunk;
 use Flame\Exceptions\ManifestException;
-use Tests\Support\TestCase;
 
 class ManifestTest extends TestCase
 {
-    public function testGetChunk(): void
+    public function testGetChunkThrowsNotFoundError(): void
     {
-        $json = json_decode(file_get_contents(__DIR__ . "/../../public/.vite/manifest.json"), true);
-        $manifest = new Manifest($json);
+        $fixture = json_decode(ManifestFixture::getFixture(), true);
+        $manifest = new Manifest($fixture);
 
         $this->assertInstanceOf(Chunk::class, $manifest->chunk("src/main.tsx"));
 
@@ -22,5 +23,13 @@ class ManifestTest extends TestCase
         $this->expectExceptionMessageMatches("/Flame.assetNotFound/");
 
         $manifest->chunk("unknown");
+    }
+
+    public function testGetChunkWithAlias(): void
+    {
+        $fixture = json_decode(ManifestFixture::getFixture(), true);
+        $manifest = new Manifest($fixture);
+
+        $this->assertInstanceOf(Chunk::class, $manifest->chunk("@main"));
     }
 }

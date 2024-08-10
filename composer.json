@@ -13,7 +13,8 @@
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-strict-rules": "^1.6",
         "phpstan/extension-installer": "^1.4",
-        "friendsofphp/php-cs-fixer": "^3.62"
+        "friendsofphp/php-cs-fixer": "^3.62",
+        "mockery/mockery": "^1.6"
     },
     "license": "MIT",
     "autoload": {
@@ -27,7 +28,8 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests",
-            "Tests\\Support\\": "tests/_support"
+            "Tests\\Support\\": "tests/_support",
+            "Tests\\Fixture\\": "tests/_fixture"
         }
     },
     "authors": [
@@ -54,5 +56,15 @@
         "allow-plugins": {
             "phpstan/extension-installer": true
         }
+    },
+    "archive": {
+        "exclude": [
+          "build",
+          "flame-vite-plugin",
+          "frontend",
+          "public",
+          "tests",
+          "vendor"
+        ]
     }
 }

@@ -164,7 +164,6 @@ class Frontend
             if ($manifest === false) {
                 throw ManifestException::forMalformedManifest();
             }
-
             $this->manifest = new Manifest($manifest);
         }
 
