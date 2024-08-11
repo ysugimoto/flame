@@ -7,12 +7,28 @@ namespace Flame\Fetch;
 use Flame\Config\Flame as FlameConfig;
 use Flame\Exceptions\ManifestException;
 
+/**
+ * HttpFetch fetches from local filesystem.
+ *
+ * @namespace Flame\Fetch
+ * @class @HttpFetch
+ */
 class HttpFetch implements FetchInterface
 {
+    /**
+     * FetchInterface method implementation.
+     * Send HTTP request to specified URL and get response JSON text.
+     *
+     * @access public
+     * @param FlameConfig $config
+     * @return string
+     * @throws ManifestException
+     */
     public function fetch(FlameConfig $config): string
     {
-        $manifestFile = $config->baseUrl . $config->manifestFile;
-        if (! preg_match("/\Ahttps?::.*\Z/u", $manifestFile)) {
+        $manifestFile = rtrim($config->baseUrl, "/"). DIRECTORY_SEPARATOR . $config->manifestFile;
+        // File URL must start with http:// protocol
+        if (! preg_match("/\Ahttps?:\/\/.*\Z/u", $manifestFile)) {
             throw ManifestException::forInvalidManifestURL($manifestFile);
         }
 
@@ -21,12 +37,12 @@ class HttpFetch implements FetchInterface
             CURLOPT_URL            => $manifestFile,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HEADER         => false,
+            CURLOPT_HEADER         => true,
             CURLOPT_MAXREDIRS      => 5, // max follows 5 redirects
         ]);
 
-        $manifest = curl_exec($handle);
-        if ($manifest === false) {
+        $buffer = curl_exec($handle);
+        if ($buffer === false) {
             throw ManifestException::forFailedHttpRequest();
         }
 
@@ -35,8 +51,40 @@ class HttpFetch implements FetchInterface
         if ($status !== 200) {
             throw ManifestException::forHttpStautsCode($status);
         }
+
+        // Validate response header, Content-Type must be application/json
+        $headerSize = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
+        $header     = substr($buffer, 0, $headerSize);
+        $body       = substr($buffer, $headerSize);
+
+        $contentType = $this->getContentType($header);
+        if (!str_starts_with($contentType, "application/json")) {
+            throw ManifestException::forHttpContentType($contentType);
+        }
         curl_close($handle);
 
-        return $manifest;
+        return $body;
+    }
+
+    /**
+     * getContentType parsed http header string and return Content-Type header value.
+     *
+     * @access public
+     * @param string $header
+     * @return string
+     */
+    public function getContentType(string $header): string
+    {
+        $lines = preg_split("/(\\r)?\\n/", $header);
+        foreach ($lines as $line) {
+            if (strpos($line, ":") === false) {
+                continue;
+            }
+            [$key, $value] = explode(":", $line);
+            if (strtolower($key) === "content-type") {
+                return strtolower(trim($value));
+            }
+        }
+        return "";
     }
 }
