@@ -158,20 +158,72 @@ class Frontend
     protected function loadManifest(): Manifest
     {
         if ($this->manifest === null) {
-            $fetcher = match($this->config->mode) {
-                FetchMode::HTTP => new HttpFetch(),
-                default => new LocalFetch(), // default as local fetch
-            };
+            $buffer = $this->lookupCache();
+            if ($buffer === false) {
+                $buffer = service("manifest")->fetch($this->config);
+                $this->writeCache($buffer);
+            }
 
-            // Fetch and decode JSON
-            $buffer = $fetcher->fetch($this->config);
-            $manifest = json_decode($buffer, true);
-            if ($manifest === false) {
+            $decoded = json_decode($buffer, true);
+            if ($decoded === false) {
                 throw ManifestException::forMalformedManifest();
             }
-            $this->manifest = new Manifest($manifest);
+            $this->manifest = new Manifest($decoded);
         }
 
         return $this->manifest;
+    }
+
+    /**
+     * Lookup cache manifest file.
+     *
+     * @access protected
+     * @return string|bool
+     */
+    protected function lookupCache(): string|bool
+    {
+        // If cache is disalbed or fetch mode is not HTTP, stop to lookup
+        if ($this->config->cacheLifetime === 0 || $this->config->mode !== FetchMode::HTTP) {
+            return false;
+        }
+
+        $cachePath = $this->config->cachePath;
+        $lifetime  = $this->config->cacheLifetime;
+
+        // Check file existence
+        if (! is_file($cachePath)) {
+            return false;
+        }
+
+        // Get the cache file mtime
+        $mtime = filemtime($cachePath);
+        if ($mtime === false) {
+            return false;
+        }
+
+        // Check expiration
+        if ($mtime + $lifetime > time()) {
+            return false;
+        }
+
+        return file_get_contents($cachePath);
+    }
+
+    /**
+     * Lookup cache manifest file.
+     *
+     * @access protected
+     * @return void
+     */
+    protected function writeCache(string $buffer): void
+    {
+        // If cache is disalbed or fetch mode is not HTTP, stop to write
+        if ($this->config->cacheLifetime === 0 || $this->config->mode !== FetchMode::HTTP) {
+            return;
+        }
+        if (file_put_contents($this->config->cachePath, $buffer)) {
+            // Ensure update file mtime
+            touch($this->config->cachePath);
+        }
     }
 }

@@ -5,37 +5,15 @@ declare(strict_types=1);
 namespace Tests;
 
 use Tests\Support\TestCase;
-use Tests\Fixture\Manifest as ManifestFixture;
 use Flame\Exceptions\ManifestException;
 use Flame\Frontend;
-use Flame\Asset\Manifest;
-use Flame\Config\Services;
-use Mockery;
+use Flame\Config\Flame;
 
 class FrontendTest extends TestCase
 {
-    protected $mock;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $fixture = json_decode(ManifestFixture::getFixture(), true);
-        $this->mock = Mockery::mock(Frontend::class, [config("Flame")])->makePartial();
-        $this->mock->shouldAllowMockingProtectedMethods();
-        $this->mock->shouldReceive("loadManifest")->andReturn(new Manifest($fixture));
-
-        Services::injectMock("frontend", $this->mock);
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-        Mockery::close();
-    }
-
     public function testRender(): void
     {
+        $this->mockManifest();
         $frontend = service("frontend");
         $out = $frontend->render("src/main.tsx");
         $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
@@ -43,12 +21,14 @@ class FrontendTest extends TestCase
 
     public function testRenderWithAlias(): void
     {
+        $this->mockManifest();
         $frontend = service("frontend");
         $out = $frontend->render("@main");
         $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
     }
     public function testPreload(): void
     {
+        $this->mockManifest();
         $frontend = service("frontend");
         $out = $frontend->preload("src/main.tsx");
         $this->assertEquals("<link rel=\"preload\" href=\"http://example.com/assets/main-BTkHr7m7.js\" as=\"script\" />\n<link rel=\"preload\" href=\"http://example.com/assets/main-DiwrgTda.css\" as=\"style\" />", $out);
@@ -56,6 +36,7 @@ class FrontendTest extends TestCase
 
     public function testRenderException(): void
     {
+        $this->mockManifest();
         $this->expectException(ManifestException::class);
         $this->expectExceptionMessageMatches("/Flame.assetNotFound/");
 
@@ -65,10 +46,36 @@ class FrontendTest extends TestCase
 
     public function testPreloadException(): void
     {
+        $this->mockManifest();
         $this->expectException(ManifestException::class);
         $this->expectExceptionMessageMatches("/Flame.assetNotFound/");
 
         $frontend = service("frontend");
         $frontend->preload("src/unknown.tsx");
+    }
+
+    public function testCacheWritten(): void
+    {
+        $this->mockFetch(2);
+        $frontend = service("frontend");
+        $frontend->render("@main");
+
+        $this->assertTrue(
+            is_file(WRITEPATH . "flame.manifest.json"),
+        );
+
+        /** @var Flame $config */
+        $config = config("Flame");
+
+        // Create new instance without service cache.
+        $frontend = new Frontend($config);
+        $frontend->render("@main");
+
+        // ...and wait for expiring cache file
+        sleep(2);
+
+        // And fetch again, cache file must be expired
+        $frontend = new Frontend($config);
+        $frontend->render("@main");
     }
 }

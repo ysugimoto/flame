@@ -93,4 +93,16 @@ class ManifestException extends CriticalError
     {
         return new static("Flame.httpStautsCode:$code");
     }
+
+    /**
+     * Raise exception when HTTP response content-type is unexpected
+     *
+     * @access public
+     * @static
+     * @return ManifestException
+     */
+    public static function forHttpContentType(string $contentType): ManifestException
+    {
+        return new static("Flame.httpContentType:$contentType");
+    }
 }
