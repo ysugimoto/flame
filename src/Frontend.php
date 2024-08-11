@@ -8,6 +8,10 @@ use Flame\Config\Flame as FlameConfig;
 use Flame\Exceptions\ManifestException;
 use Flame\Asset\Manifest;
 use Flame\Asset\Assets;
+use Flame\Fetch\FetchInterface;
+use Flame\Fetch\LocalFetch;
+use Flame\Fetch\HttpFetch;
+use Flame\Enums\FetchMode;
 
 /**
  * Main action class, load and parse vite manifest file,
@@ -19,10 +23,10 @@ use Flame\Asset\Assets;
 class Frontend
 {
     /**
-     * Holds the configuration class.
+     * Holds the fetch interface class.
      *
      * @access protected
-     * @property Flame\Config\Flame $config
+     * @property FlameConfig $config
      */
     protected FlameConfig $config;
 
@@ -154,13 +158,14 @@ class Frontend
     protected function loadManifest(): Manifest
     {
         if ($this->manifest === null) {
-            // Load manifest file
-            $manifestFile = $this->config->publicPath . DIRECTORY_SEPARATOR . $this->config->manifestFile;
-            if (! is_file($manifestFile)) {
-                throw ManifestException::forManifestNotFound();
-            }
+            $fetcher = match($this->config->mode) {
+                FetchMode::HTTP => new HttpFetch(),
+                default => new LocalFetch(), // default as local fetch
+            };
 
-            $manifest = json_decode(file_get_contents($manifestFile), true);
+            // Fetch and decode JSON
+            $buffer = $fetcher->fetch($this->config);
+            $manifest = json_decode($buffer, true);
             if ($manifest === false) {
                 throw ManifestException::forMalformedManifest();
             }
