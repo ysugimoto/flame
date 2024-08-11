@@ -10,7 +10,7 @@ namespace Flame\Enums;
 enum FetchMode
 {
     /**
-     * LOCAL means find and retrieve manifest file on the local filesystem.
+     * LOCAL(default)  means find and retrieve manifest file on the local filesystem.
      */
     case LOCAL;
 

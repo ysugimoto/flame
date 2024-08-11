@@ -40,6 +40,14 @@ class Services extends BaseService
         return new Frontend($config);
     }
 
+    /**
+     * Returns the manifest fetcher interface.
+     *
+     * @access public
+     * @static
+     * @param bool $getShared
+     * @rerurn FetchInterface
+     */
     public static function manifest($getShared = true): FetchInterface
     {
         if ($getShared) {
@@ -50,7 +58,7 @@ class Services extends BaseService
 
         return match($config->mode) {
             FetchMode::HTTP => new HttpFetch(),
-            default         => new LocalFetch(),
+            default         => new LocalFetch(), // same as FetchMode::LOCAL
         };
     }
 }

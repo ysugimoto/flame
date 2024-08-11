@@ -6,13 +6,14 @@ namespace Tests\Asset;
 
 use Flame\Asset\Chunk;
 use Tests\Support\TestCase;
+use Tests\Fixture\Manifest as ManifestFixture;
 
 class ChunkTest extends TestCase
 {
     public function testChunk(): void
     {
-        $json = json_decode(file_get_contents(__DIR__ . "/../../public/.vite/manifest.json"), true);
-        $item = $json["src/main.tsx"];
+        $manifest = $this->getManifest();
+        $item = $manifest["src/main.tsx"];
         $chunk = new Chunk($item);
 
         $this->assertEquals($item["file"], $chunk->file);
@@ -25,8 +26,8 @@ class ChunkTest extends TestCase
 
     public function testReferencedChunk(): void
     {
-        $json = json_decode(file_get_contents(__DIR__ . "/../../public/.vite/manifest.json"), true);
-        $item = $json["src/main.css"];
+        $manifest = $this->getManifest();
+        $item = $manifest["src/main.css"];
         $chunk = new Chunk($item);
 
         $this->assertEquals($item["file"], $chunk->file);
@@ -35,5 +36,11 @@ class ChunkTest extends TestCase
         $this->assertEquals([], $chunk->css);
         $this->assertEquals([], $chunk->imports);
         $this->assertEquals(true, $chunk->isEntry);
+    }
+
+    private function getManifest(): array
+    {
+        $json = json_decode(ManifestFixture::getFixture(), true);
+        return $json["manifest"];
     }
 }

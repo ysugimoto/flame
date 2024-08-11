@@ -217,7 +217,7 @@ class Frontend
      */
     protected function writeCache(string $buffer): void
     {
-        // If cache is disalbed or fetch mode is not HTTP, stop to write
+        // If cache is disabled or fetch mode is not HTTP, stop to write
         if ($this->config->cacheLifetime === 0 || $this->config->mode !== FetchMode::HTTP) {
             return;
         }
