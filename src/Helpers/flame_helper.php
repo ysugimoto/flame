@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Flame\Frontend;
-
 if (! function_exists("flame")) {
     /**
      * Shortcut function to render the entry HTML tags

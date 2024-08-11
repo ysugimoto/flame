@@ -33,6 +33,14 @@ class Manifest
     protected array $aliases;
 
     /**
+     * Holds vite devserver info.
+     *
+     * @access protected
+     * @property array|null $server
+     */
+    protected ?array $server;
+
+    /**
      * Constructor.
      *
      * @access public
@@ -42,6 +50,7 @@ class Manifest
     {
         $this->manifest = $manifest["manifest"] ?? [];
         $this->aliases  = $manifest["aliases"] ?? [];
+        $this->server   = $manifest["server"] ?? null;
     }
 
     /**
@@ -77,5 +86,49 @@ class Manifest
             return $file;
         }
         return $this->aliases[$file] ?? $file;
+    }
+
+    /**
+     * Get devServer port number.
+     *
+     * @access public
+     * @return int
+     */
+    public function getPort(): ?int
+    {
+        return $this->server["port"] ?? null;
+    }
+
+    /**
+     * Get devServer host.
+     *
+     * @access public
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->server["host"] ?? "localhost";
+    }
+
+    /**
+     * Get library name.
+     *
+     * @access public
+     * @return string
+     */
+    public function getLibrary(): string
+    {
+        return $this->server["library"] ?? "";
+    }
+
+    /**
+     * Get server flag.
+     *
+     * @access public
+     * @return bool
+     */
+    public function getIsServer(): bool
+    {
+        return $this->server !== null;
     }
 }

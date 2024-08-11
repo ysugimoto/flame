@@ -8,7 +8,7 @@ use CodeIgniter\Exceptions\CriticalError;
 use CodeIgniter\Exceptions\DebugTraceableTrait;
 
 /**
- * ManifestException class represents Manifest related  exceptions.
+ * ManifestException class represents Manifest related exceptions.
  * This Exception class holds some message like:
  *
  * - Flame.manifestNotFound   - raises when manifest file could not load.
