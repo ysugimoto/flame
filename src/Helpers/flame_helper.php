@@ -6,7 +6,7 @@ use Flame\Frontend;
 
 if (! function_exists("flame")) {
     /**
-     * Shortcut found for render the entry HTML tags
+     * Shortcut function to render the entry HTML tags
      *
      * @function flame
      * @param string|array $files
@@ -20,7 +20,7 @@ if (! function_exists("flame")) {
 
 if (! function_exists("flame_preload")) {
     /**
-     * Shortcut found for render the preload HTML tags
+     * Shortcut function to render the preload HTML tags
      *
      * @function flame_preload
      * @param string|array $files

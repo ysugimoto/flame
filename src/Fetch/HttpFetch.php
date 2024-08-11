@@ -8,7 +8,7 @@ use Flame\Config\Flame as FlameConfig;
 use Flame\Exceptions\ManifestException;
 
 /**
- * HttpFetch fetches from local filesystem.
+ * HttpFetch fetches manifest from HTTP resource.
  *
  * @namespace Flame\Fetch
  * @class @HttpFetch
@@ -52,7 +52,7 @@ class HttpFetch implements FetchInterface
             throw ManifestException::forHttpStautsCode($status);
         }
 
-        // Validate response header, Content-Type must be application/json
+        // Validate response header. Content-Type header must be application/json
         $headerSize = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
         $header     = substr($buffer, 0, $headerSize);
         $body       = substr($buffer, $headerSize);
@@ -67,7 +67,7 @@ class HttpFetch implements FetchInterface
     }
 
     /**
-     * getContentType parsed http header string and return Content-Type header value.
+     * getContentType returns Content-Type header value from header strings.
      *
      * @access public
      * @param string $header

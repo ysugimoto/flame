@@ -5,7 +5,7 @@ namespace Flame\Fetch;
 use Flame\Config\Flame as FlameConfig;
 
 /**
- * Fetch Interface indicates retrieve manifest buffer from each source.
+ * Fetch Interface represents fetch manifest buffer from each source.
  */
 interface FetchInterface
 {

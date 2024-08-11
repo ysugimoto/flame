@@ -8,7 +8,7 @@ use Flame\Config\Flame as FlameConfig;
 use Flame\Exceptions\ManifestException;
 
 /**
- * LocalFetch fetches from local filesystem.
+ * LocalFetch fetches manifest from local filesystem.
  *
  * @namespace Flame\Fetch
  * @class @LocalFetch

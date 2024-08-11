@@ -11,9 +11,13 @@ use CodeIgniter\Exceptions\DebugTraceableTrait;
  * ManifestException class represents Manifest related  exceptions.
  * This Exception class holds some message like:
  *
- * - Flame.manifestNotFound  - raises when manifest file could not load.
- * - Flame.malformedManifest - raises when manifest file is invalid JSON format.
- * - Flame.assetNotFound     - raises when asset file is not found in the manifest file.
+ * - Flame.manifestNotFound   - raises when manifest file could not load.
+ * - Flame.malformedManifest  - raises when manifest file is invalid JSON format.
+ * - Flame.assetNotFound      - raises when asset file is not found in the manifest file.
+ * - Flame.invalidManifestURL - raises when invalid HTTP url configuration is provided.
+ * - Flame.failedHttpRequest  - raises when HTTP request failed (couldn't resolve host, etc).
+ * - Flame.httpStautsCode     - raises when HTTP response got without 200 OK.
+ * - Flame.httpContentType    - raises when HTTP response's Content-Type is not application/json.
  *
  * @namespace Flame\Exceptions
  * @class ManifestException
