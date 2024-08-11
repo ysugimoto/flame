@@ -39,7 +39,8 @@ class Flame extends BaseConfig
     /**
      * Configuration for the HTTP fetch/load base url.
      *
-     * Note that this property is used when the fetch mode is "HTTP".
+     * Note that this property is used when the fetch mode is "HTTP",
+     * Ensure set the directory which is placed ".flame" manifest file.
      *
      * @access public
      * @property string $baseUrl
@@ -48,7 +49,7 @@ class Flame extends BaseConfig
 
     /**
      * Configuration for the public directory path.
-     * Typically the CodeIgniter's public path is /public
+     * Typically the CodeIgniter's public path is ROOTPATH . /public
      * but you can change arbitrary path - for example, you don't want to place .flame file in public directory.
      * But then you need to change the manifest generation configuration on flame-vite-plugin configuration.
      *
@@ -57,7 +58,7 @@ class Flame extends BaseConfig
      * @access public
      * @property string $publicPath
      */
-    public string $publicPath = ROOTPATH . "public/.flame";
+    public string $publicPath = ROOTPATH . "public/";
 
     /**
      * Configuration for the flame manifest file that created by flame-vite-plugin.

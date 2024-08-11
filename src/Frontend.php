@@ -12,6 +12,7 @@ use Flame\Fetch\FetchInterface;
 use Flame\Fetch\LocalFetch;
 use Flame\Fetch\HttpFetch;
 use Flame\Enums\FetchMode;
+use Flame\Exceptions\EnvironmentException;
 
 /**
  * Main action class, load and parse vite manifest file,
@@ -71,6 +72,15 @@ class Frontend
         }
 
         $manifest = $this->loadManifest();
+        // If manifest is generated under the vite dev server, generate corresponds to HRM.
+        if ($manifest->getIsServer()) {
+            return $this->renderForServer($manifest, $files);
+        }
+
+        // Otherwise, generate built assets.
+
+
+        $manifest = $this->loadManifest();
         $tags = [];
 
         foreach ($files as $file) {
@@ -82,6 +92,59 @@ class Frontend
     }
 
     /**
+     * Render scripts for vite devserver.
+     *
+     * @access public
+     * @return string
+     * @throws EnvironmentException
+     */
+    public function renderForServer(Manifest $manifest, array $files): string
+    {
+        // Raise exception if devserver enables but CodeIgniter environment is production
+        if (env("CI_ENVIRONMENT", "production") === "production") {
+            throw new EnvironmentException("Frontend dev manifest cannot accept on the production env.");
+        }
+
+        $host = $manifest->getHost();
+        $port = $manifest->getPort();
+        $tags = [];
+        // If dependent library is react, we need to add more tag for refresh
+        if ($manifest->getLibrary() === "react") {
+            $tags[] = <<<EOS
+<script type="module">
+import RefreshRuntime from "http://$host:$port/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.\$RefreshReg\$ = () => {}
+window.\$RefreshSig\$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+EOS;
+        }
+        // Add vite client via devserver
+        $tags[] = sprintf(
+            "<script type=\"module\" src=\"http://%s:%d/@vite/client\"></script>",
+            $host,
+            $port,
+        );
+
+        // And load provided files.
+        // Note that vite devserver will resolve its dependencies
+        // so we don't need to resolve imports and css.
+        foreach ($files as $file) {
+            $src = $manifest->lookupAlias($file);
+            $tags[] = sprintf(
+                "<script type=\"module\" src=\"http://%s:%d/%s\"></script>",
+                $host,
+                $port,
+                $src,
+            );
+        }
+
+        return implode("\n", $tags);
+    }
+
+
+    /**
      * Render the preload files as link tag.
      *
      * @access public
@@ -90,12 +153,16 @@ class Frontend
      */
     public function preload($files = []): string
     {
+        $manifest = $this->loadManifest();
+        if ($manifest->getIsServer()) {
+            return "";
+        }
+
         // Coerce string array
         if (! is_array($files)) {
             $files = [$files];
         }
 
-        $manifest = $this->loadManifest();
         $tags = [];
 
         foreach ($files as $file) {
@@ -161,7 +228,6 @@ class Frontend
             $buffer = $this->lookupCache();
             if ($buffer === false) {
                 $buffer = service("manifest")->fetch($this->config);
-                $this->writeCache($buffer);
             }
 
             $decoded = json_decode($buffer, true);
@@ -169,6 +235,11 @@ class Frontend
                 throw ManifestException::forMalformedManifest();
             }
             $this->manifest = new Manifest($decoded);
+
+            // Write cache only when manifest is production
+            if (! $this->manifest->getIsServer()) {
+                $this->writeCache($buffer);
+            }
         }
 
         return $this->manifest;

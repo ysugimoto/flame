@@ -26,7 +26,7 @@ class LocalFetch implements FetchInterface
      */
     public function fetch(FlameConfig $config): string
     {
-        $manifestFile = $config->publicPath . $config->manifestFile;
+        $manifestFile = rtrim($config->publicPath, "/") . DIRECTORY_SEPARATOR . $config->manifestFile;
         if (! is_file($manifestFile)) {
             throw ManifestException::forManifestNotFound();
         }

@@ -27,7 +27,7 @@ class HttpFetch implements FetchInterface
     public function fetch(FlameConfig $config): string
     {
         $manifestFile = rtrim($config->baseUrl, "/"). DIRECTORY_SEPARATOR . $config->manifestFile;
-        // File URL must start with http:// protocol
+        // File URL must start with http(s):// protocol
         if (! preg_match("/\Ahttps?:\/\/.*\Z/u", $manifestFile)) {
             throw ManifestException::forInvalidManifestURL($manifestFile);
         }
