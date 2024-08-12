@@ -80,13 +80,37 @@ Then you can specify asset name as alias like:
 On the above case, the `@main` alias will be resolved in the manifest file so you don't take care of the asset filename.
 To use the alias loading, see [Alias](https://github.com/ysugimoto/flame-vite-plugin?tab=readme-ov-file#alias) section in the vite plugin.
 
-
-### DevServer / HMR
+## DevServer / HMR
 
 `vite` can runs dev server with HMR and the `flame` also can synchronize with it.
 For example, `vite` command will start dev server like `http://localhost:5173`, and also `flame-vite-plugin` generates manifest file as **dev mode**.
 The `flame` helper function automatically recognize the manifest is dev mode or not, and generates `<script>` tags with HMR mode.
 It is useful for developing frontend view with CodeIgniter. When you change the frontend file, the view that is displayed by CodeIgniter will reload automatically.
+
+## Manifest Loading
+
+Currently we support a way of loading manifest file via:
+
+- Local FileSystem
+- HTTP Request
+
+The default setting is `Local FileSystem` but sometimes your frontend will be served via Cloud Storage service like `AWS S3`, `Google Cloud Storage` for some Single-Page-Application.
+
+On this case, you can use `HTTP Request` manifest loading by changind configuration file.
+
+```php
+// app/Config/Flame.php
+
+class Flame extends FlameConfig
+{
+    ...
+    public FetchMode $mode = FetchMode::HTTP;
+    public string $baseUrl = "https://[yourdomain]/";
+    ...
+}
+```
+
+See phpdocs in the configiuration file in detail.
 
 ## Contribution
 
