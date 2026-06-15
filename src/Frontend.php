@@ -101,8 +101,8 @@ class Frontend
     public function renderForServer(Manifest $manifest, array $files): string
     {
         // Raise exception if devserver enables but CodeIgniter environment is production
-        if (env("CI_ENVIRONMENT", "production") === "production") {
-            throw new EnvironmentException("Frontend dev manifest cannot accept on the production env.");
+        if (env("CI_ENVIRONMENT", "development") === "production") {
+            throw new EnvironmentException("Frontend dev manifest cannot be used in the production environment.");
         }
 
         $host = $manifest->getHost();

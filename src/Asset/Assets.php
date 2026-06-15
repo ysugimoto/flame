@@ -171,6 +171,7 @@ class Assets
     protected function generateScript(string $file): string
     {
         $attributes = [
+          'type="module"',
           'src="' . $this->uri->baseUrl($file) . '"',
         ];
         return "<script " . implode(" ", $attributes) . "></script>";

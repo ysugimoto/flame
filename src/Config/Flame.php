@@ -70,7 +70,7 @@ class Flame extends BaseConfig
     public string $manifestFile = ".flame";
 
     /**
-     * Path definition to save cache filem, the file must be writable.
+     * Path definition to save cache file, the file must be writable.
      *
      * @access public
      * @property string $cachePath
