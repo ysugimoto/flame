@@ -16,7 +16,7 @@ class FrontendTest extends TestCase
         $this->mockManifest();
         $frontend = service("frontend");
         $out = $frontend->render("src/main.tsx");
-        $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
+        $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script type=\"module\" src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
     }
 
     public function testRenderWithAlias(): void
@@ -24,7 +24,7 @@ class FrontendTest extends TestCase
         $this->mockManifest();
         $frontend = service("frontend");
         $out = $frontend->render("@main");
-        $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
+        $this->assertEquals("<link rel=\"stylesheet\" href=\"http://example.com/assets/main-DiwrgTda.css\" />\n<script type=\"module\" src=\"http://example.com/assets/main-BTkHr7m7.js\"></script>", $out);
     }
     public function testPreload(): void
     {

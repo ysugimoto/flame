@@ -35,7 +35,7 @@ class AssetsTest extends TestCase
         $tags = $assets->generateEntryTags();
         $this->assertEquals([
           'assets/main.1.css' => '<link rel="stylesheet" href="http://example.com/assets/main.1.css" />',
-          'assets/main.1.js'  => '<script src="http://example.com/assets/main.1.js"></script>',
+          'assets/main.1.js'  => '<script type="module" src="http://example.com/assets/main.1.js"></script>',
         ], $tags);
         $this->assertEquals([], $assets->generatePreloadTags());
     }
